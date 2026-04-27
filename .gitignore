@@ -1,4 +1,12 @@
 node_modules/
+.env
+.env.local
+.env.*.local
+.wwebjs_auth/
+.wwebjs_cache/
+citas.json
+*.log
+.DS_Store
 .wwebjs_auth/
 .wwebjs_cache/
 codigo-qr.png
