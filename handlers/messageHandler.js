@@ -99,6 +99,9 @@ const procesarFecha = async (msg, user, chatID) => {
 
 const handleMessage = async (msg) => {
     try {
+        // ⚠️ IMPORTANTE: Ignorar mensajes del propio bot (evitar bucles infinitos)
+        if (msg.fromMe) return;
+
         // Ignorar grupos y broadcasts
         if (isGroupOrBroadcast(msg)) return;
 
