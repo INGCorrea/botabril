@@ -4,9 +4,9 @@
  */
 
 const { Client, LocalAuth } = require('whatsapp-web.js');
-const qrcode = require('qrcode-terminal');
 const config = require('./config');
 const { handleMessage, getActiveUsers } = require('./handlers/messageHandler');
+const { generateQRImage, deleteQRImage } = require('./utils/qrGenerator');
 
 // Inicializar cliente
 const client = new Client({
@@ -16,8 +16,9 @@ const client = new Client({
 
 // Evento: Mostrar QR
 client.on('qr', (qr) => {
-    console.log('\n📱 Escanea este código QR con WhatsApp:');
-    qrcode.generate(qr, { small: true });
+    generateQRImage(qr).catch(error => {
+        console.error('❌ Error con QR:', error);
+    });
 });
 
 // Evento: Bot conectado
@@ -37,6 +38,7 @@ client.on('error', (error) => {
 // Evento: Desconexión
 client.on('disconnected', (reason) => {
     console.log('⚠️  Bot desconectado:', reason);
+    deleteQRImage();
 });
 
 // Inicializar
@@ -48,6 +50,7 @@ client.initialize().catch(error => {
 // Graceful shutdown
 process.on('SIGINT', () => {
     console.log('\n👋 Desconectando bot...');
+    deleteQRImage();
     client.destroy();
     process.exit(0);
 });

@@ -5,6 +5,7 @@ node_modules/
 .wwebjs_auth/
 .wwebjs_cache/
 citas.json
+qr.png
 *.log
 .DS_Store
 .wwebjs_auth/
