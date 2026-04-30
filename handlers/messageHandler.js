@@ -30,12 +30,60 @@ const isGroupOrBroadcast = (msg) => {
            msg.from.includes('@g.us');
 };
 
+const MENU_OPTIONS = [
+    '1. Agendar cita',
+    '2. Información general de la clínica',
+    '3. Horarios y ubicación',
+    '4. Contacto'
+];
+
 const iniciarFlujo = async (msg, chatID) => {
     usuarios[chatID] = { paso: FLUJO_PASOS.NOMBRE, datos: {} };
     await msg.reply(
         '🦷 ¡Hola! Soy el asistente de Dentisteam.\n\n' +
         'Para agendar tu cita, dime tu **nombre completo**:'
     );
+};
+
+const enviarMenu = async (msg) => {
+    await msg.reply(
+        '📋 Bienvenido a Dentisteam. Elige una opción escribiendo el número o el texto:\n\n' +
+        MENU_OPTIONS.join('\n') +
+        '\n\nSi quieres agendar una cita, puedes escribir "1" o "cita".'
+    );
+};
+
+const enviarInfoClinica = async (msg) => {
+    await msg.reply(
+        '🏥 Información general de Dentisteam:\n\n' +
+        '• Clínica especializada en odontología general, estética y emergencia dental.\n' +
+        '• Equipo profesional con atención personalizada en un ambiente seguro.\n' +
+        '• Servicio de urgencias dentales y controles preventivos.\n\n' +
+        '📍 Encuéntranos en Google Maps:\n' +
+        'https://maps.app.goo.gl/SMjA3rF9ptzk6LneA\n\n' +
+        '🌐 Sitio web:\n' +
+        'https://dentisteam.com/\n\n' +
+        '📸 Instagram:\n' +
+        'https://www.instagram.com/dentisteam/\n\n' +
+        '🕒 Horarios: Lunes a Viernes 9:00 - 18:00, Sábados 9:00 - 14:00.\n' +
+        '📞 Teléfono: +52 663 196 9295\n\n' +
+        'Para continuar, escribe:\n' +
+        '1 para agendar cita, 3 para horarios, 4 para contacto o cualquier letra para ver el menú de nuevo.'
+    );
+};
+
+const responderNoEntiendo = async (msg) => {
+    await msg.reply(
+        '🤔 No entendí ese mensaje. Si necesitas ayuda, escribe:\n' +
+        '• "menu" para ver las opciones\n' +
+        '• "1" para agendar cita\n' +
+        '• "cancelar" para reiniciar el asistente'
+    );
+};
+
+const cancelarFlujo = async (msg, chatID) => {
+    delete usuarios[chatID];
+    await msg.reply('✅ Proceso cancelado. Escribe "menu" para ver las opciones o "cita" para agendar de nuevo.');
 };
 
 const procesarNombre = async (msg, user) => {
@@ -114,9 +162,42 @@ const handleMessage = async (msg) => {
         const chatID = msg.from;
         const texto = msg.body ? msg.body.toLowerCase().trim() : "";
 
-        // Palabras clave para iniciar
-        if (['hola', 'cita', 'test', 'agendar'].includes(texto)) {
-            await iniciarFlujo(msg, chatID);
+        // Permitir cancelar en cualquier momento cuando hay flujo activo
+        if (usuarios[chatID] && ['cancelar', 'salir', 'reiniciar', 'borrar', 'stop'].includes(texto)) {
+            await cancelarFlujo(msg, chatID);
+            return;
+        }
+
+        // Respuesta rápida a menú y letras sueltas cuando no hay flujo activo
+        const esLetraSueltas = texto.length === 1 && /^[a-záéíóúñ]$/i.test(texto);
+        if (!usuarios[chatID]) {
+            if (texto === '' || ['menu', 'opciones'].includes(texto) || esLetraSueltas) {
+                await enviarMenu(msg);
+                return;
+            }
+
+            if (['1', 'cita', 'agendar', 'agendar cita'].includes(texto)) {
+                await iniciarFlujo(msg, chatID);
+                return;
+            }
+
+            if (['2', 'información', 'informacion', 'info', 'clinica', 'clínica', 'clinica general', 'informacion general'].includes(texto)) {
+                await enviarInfoClinica(msg);
+                return;
+            }
+
+            if (['3', 'horarios', 'ubicación', 'ubicacion', 'dónde', 'donde', 'ubicacion y horarios'].includes(texto)) {
+                await enviarInfoClinica(msg);
+                return;
+            }
+
+            if (['4', 'contacto', 'teléfono', 'telefono', 'whatsapp'].includes(texto)) {
+                await enviarInfoClinica(msg);
+                return;
+            }
+
+            // Si no se reconoce y no hay sesión, enviar respuesta de ayuda
+            await responderNoEntiendo(msg);
             return;
         }
 
