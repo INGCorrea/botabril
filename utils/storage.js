@@ -4,6 +4,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { appendCitaRow } = require('./googleSheets');
 
 const CITAS_FILE = path.join(__dirname, '..', 'citas.json');
 
@@ -31,6 +32,15 @@ const saveCita = (citaData) => {
         citas.push(newCita);
         fs.writeFileSync(CITAS_FILE, JSON.stringify(citas, null, 2));
         console.log('✅ Cita guardada en archivo');
+
+        // ⏸️ Google Sheets PAUSADO - Las citas se guardan en citas.json
+        // Para reactivar: descomentar el código de abajo
+        // if (process.env.GOOGLE_SHEETS_SPREADSHEET_ID) {
+        //     appendCitaRow(newCita)
+        //         .then(() => console.log('✅ Cita enviada a Google Sheets'))
+        //         .catch((error) => console.error('⚠️ Error enviando cita a Google Sheets:', error.message));
+        // }
+
         return newCita;
     } catch (error) {
         console.error('❌ Error guardando cita:', error.message);
