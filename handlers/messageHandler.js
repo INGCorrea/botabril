@@ -9,10 +9,15 @@ const {
     validateName,
     validateSymptoms,
     validateInsurance,
-    normalizeInsurance
+    normalizeInsurance,
+    checkRetryLimit,
+    resetRetries,
+    detectSpamActivity,
+    isFakeTestNumber
 } = require('../utils/validators');
 const { t, detectLanguage } = require('../utils/i18n');
 const { getIntent, isSingleLetter } = require('../utils/intents');
+const { isWithinBusinessHours, getNextOpeningTime } = require('../utils/businessHours');
 
 const usuarios = {};
 
@@ -38,6 +43,58 @@ const reply = async (msg, lang, key, ...args) => {
     await msg.reply(t(lang, key, ...args));
 };
 
+const getMenuList = (lang) => {
+    const isEn = lang === 'en';
+    return {
+        buttonText: isEn ? 'Choose an option' : 'Elige una opción',
+        description: isEn ?
+            'Tap the option you want to continue.' :
+            'Toca la opción que deseas para continuar.',
+        title: isEn ? 'Dentisteam Menu' : 'Menú Dentisteam',
+        sections: [
+            {
+                title: isEn ? 'Main options' : 'Opciones principales',
+                rows: [
+                    {
+                        title: isEn ? 'Book appointment' : 'Agendar cita',
+                        description: isEn ? 'Start your appointment flow' : 'Comenzar agendar cita',
+                        id: 'cita'
+                    },
+                    {
+                        title: isEn ? 'Clinic information' : 'Información de la clínica',
+                        description: isEn ? 'See address, hours and services' : 'Ver dirección, horarios y servicios',
+                        id: 'info'
+                    },
+                    {
+                        title: isEn ? 'Hours & location' : 'Horarios y ubicación',
+                        description: isEn ? 'Get clinic hours and map link' : 'Ver horarios y mapa',
+                        id: 'horarios'
+                    },
+                    {
+                        title: isEn ? 'Contact' : 'Contacto',
+                        description: isEn ? 'Phone and WhatsApp information' : 'Teléfono y WhatsApp',
+                        id: 'contacto'
+                    },
+                    {
+                        title: isEn ? 'FAQs' : 'Preguntas frecuentes',
+                        description: isEn ? 'Common questions and answers' : 'Preguntas comunes y respuestas',
+                        id: 'faq'
+                    }
+                ]
+            }
+        ]
+    };
+};
+
+const sendMenuList = async (msg, lang) => {
+    const listMessage = getMenuList(lang);
+    try {
+        await msg.reply(listMessage);
+    } catch (error) {
+        await reply(msg, lang, 'menu');
+    }
+};
+
 const getLang = (msg, chatID) => {
     if (usuarios[chatID]?.lang) return usuarios[chatID].lang;
     return detectLanguage(msg.body || '');
@@ -49,7 +106,7 @@ const iniciarFlujo = async (msg, chatID, lang) => {
 };
 
 const enviarMenu = async (msg, lang) => {
-    await reply(msg, lang, 'menu');
+    await sendMenuList(msg, lang);
 };
 
 const enviarInfoClinica = async (msg, lang) => {
@@ -65,9 +122,15 @@ const cancelarFlujo = async (msg, chatID) => {
 const procesarNombre = async (msg, user) => {
     const { lang } = user;
     if (!validateName(msg.body)) {
+        if (!checkRetryLimit(user, 3)) {
+            await reply(msg, lang, 'error');
+            user.paused = true;  // Pause flow after too many retries
+            return;
+        }
         await reply(msg, lang, 'citaNombreInvalido');
         return;
     }
+    resetRetries(user);
     user.datos.nombre = msg.body.trim();
     user.paso = FLUJO_PASOS.NECESIDAD;
     await reply(msg, lang, 'askNeed');
@@ -87,11 +150,26 @@ const procesarNecesidad = async (msg, user) => {
 
 const procesarTelefono = async (msg, user) => {
     const { lang } = user;
-    if (!validatePhone(msg.body)) {
+    const phoneStr = msg.body.trim();
+    
+    // Check for fake/test numbers
+    if (isFakeTestNumber(phoneStr)) {
+        await reply(msg, lang, 'citaTelefonoInvalido');
+        user.paused = true;  // Pause suspicious activity
+        return;
+    }
+    
+    if (!validatePhone(phoneStr)) {
+        if (!checkRetryLimit(user, 3)) {
+            await reply(msg, lang, 'error');
+            user.paused = true;  // Pause after retries
+            return;
+        }
         await reply(msg, lang, 'citaTelefonoInvalido');
         return;
     }
-    user.datos.telefono = msg.body.trim();
+    resetRetries(user);
+    user.datos.telefono = phoneStr;
     user.paso = FLUJO_PASOS.SEGURO;
     await reply(msg, lang, 'citaSeguro');
 };
@@ -99,9 +177,15 @@ const procesarTelefono = async (msg, user) => {
 const procesarSeguro = async (msg, user) => {
     const { lang } = user;
     if (!validateInsurance(msg.body)) {
+        if (!checkRetryLimit(user, 3)) {
+            await reply(msg, lang, 'error');
+            user.paused = true;  // Pause after retries
+            return;
+        }
         await reply(msg, lang, 'citaSeguroInvalido');
         return;
     }
+    resetRetries(user);
     user.datos.seguro = normalizeInsurance(msg.body, lang);
     if (user.datos.seguro && user.datos.seguro.toLowerCase() !== 'ninguno' && user.datos.seguro.toLowerCase() !== 'none') {
         user.paso = FLUJO_PASOS.FECHA_NAC;
@@ -134,9 +218,15 @@ const procesarMemberId = async (msg, user) => {
 const procesarSintomas = async (msg, user) => {
     const { lang } = user;
     if (!validateSymptoms(msg.body)) {
+        if (!checkRetryLimit(user, 3)) {
+            await reply(msg, lang, 'error');
+            user.paused = true;  // Pause after retries
+            return;
+        }
         await reply(msg, lang, 'citaSintomasInvalido');
         return;
     }
+    resetRetries(user);
     user.datos.sintomas = msg.body.trim();
     user.paso = FLUJO_PASOS.FECHA;
     await reply(msg, lang, 'citaFecha');
@@ -167,6 +257,7 @@ const procesarFecha = async (msg, user, chatID) => {
 const handleIdleMessage = async (msg, chatID, texto) => {
     const lang = detectLanguage(msg.body || '');
     const intent = getIntent(texto);
+    const isOpen = isWithinBusinessHours();
 
     if (intent === 'cancelar') {
         await cancelarFlujo(msg, chatID);
@@ -174,38 +265,71 @@ const handleIdleMessage = async (msg, chatID, texto) => {
     }
 
     if (intent === 'saludo') {
+        if (!isOpen) {
+            await reply(msg, lang, 'cerrado');
+            return;
+        }
         await reply(msg, lang, 'saludo');
         await enviarMenu(msg, lang);
         return;
     }
 
     if (!intent && (texto === '' || isSingleLetter(texto))) {
+        if (!isOpen) {
+            await reply(msg, lang, 'cerrado');
+            return;
+        }
         await enviarMenu(msg, lang);
         return;
     }
 
     if (intent === 'menu') {
+        if (!isOpen) {
+            await reply(msg, lang, 'cerrado');
+            return;
+        }
         await enviarMenu(msg, lang);
         return;
     }
 
     if (intent === 'precio') {
+        if (!isOpen) {
+            await reply(msg, lang, 'cerrado');
+            return;
+        }
         await reply(msg, lang, 'precioNo');
         return;
     }
 
     if (intent === 'faq') {
+        if (!isOpen) {
+            await reply(msg, lang, 'cerrado');
+            return;
+        }
         await reply(msg, lang, 'faq');
         return;
     }
 
     if (intent === 'cita') {
+        if (!isOpen) {
+            await reply(msg, lang, 'citaCerrada');
+            return;
+        }
         await iniciarFlujo(msg, chatID, lang);
         return;
     }
 
     if (intent === 'info' || intent === 'horarios' || intent === 'contacto') {
+        if (!isOpen) {
+            await reply(msg, lang, 'cerrado');
+            return;
+        }
         await enviarInfoClinica(msg, lang);
+        return;
+    }
+
+    if (!isOpen) {
+        await reply(msg, lang, 'cerrado');
         return;
     }
 
@@ -219,6 +343,27 @@ const handleMessage = async (msg) => {
 
         const chatID = msg.from;
         const texto = msg.body ? msg.body.toLowerCase().trim() : '';
+        const intent = getIntent(texto);
+        const lang = getLang(msg, chatID);
+
+        if (!usuarios[chatID] && intent) {
+            usuarios[chatID] = { paso: null, datos: {}, lang };
+        }
+
+        // Detectar spam activity (rapid-fire messages)
+        if (usuarios[chatID] && detectSpamActivity(usuarios[chatID])) {
+            usuarios[chatID].paused = true;
+            await reply(msg, lang, 'spam');
+            return;
+        }
+
+        const suspiciousShort = ['de', 'q', 'k', 'xq', 'eh', 'ya', 'ay', 'ah', 'a'];
+        if (intent === 'suspicious' || (!intent && suspiciousShort.includes(texto))) {
+            usuarios[chatID] = usuarios[chatID] || { paso: null, datos: {}, lang };
+            usuarios[chatID].paused = true;
+            await reply(msg, lang, 'suspicious');
+            return;
+        }
 
         // Permitir cambio explícito de idioma
         if (texto === 'es' || texto === 'en' || texto === 'us' || texto === 'mx') {
@@ -230,13 +375,27 @@ const handleMessage = async (msg) => {
             return;
         }
 
+        if (usuarios[chatID]?.paused) {
+            if (intent === 'menu' || intent === 'cita' || intent === 'cancelar') {
+                usuarios[chatID].paused = false;
+            } else {
+                return;
+            }
+        }
+
         if (isMediaMessage(msg) && usuarios[chatID]) {
-            const lang = getLang(msg, chatID);
             await reply(msg, lang, 'soloTexto');
             return;
         }
 
-        if (usuarios[chatID] && getIntent(texto) === 'cancelar') {
+        if (intent === 'manual') {
+            usuarios[chatID] = usuarios[chatID] || { paso: null, datos: {}, lang };
+            usuarios[chatID].paused = true;
+            await reply(msg, lang, 'manual');
+            return;
+        }
+
+        if (usuarios[chatID] && intent === 'cancelar') {
             await cancelarFlujo(msg, chatID);
             return;
         }

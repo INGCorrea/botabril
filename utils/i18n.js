@@ -24,8 +24,8 @@ const messages = {
         menu: () =>
             '📋 *Bienvenido a Dentisteam*\n\n' +
             MENU_OPTIONS.es.join('\n') +
-            '\n\n💬 Escribe el número o la palabra correspondiente.\n' +
-            'Si prefieres inglés escribe *US*.',
+            '\n\n💬 Toca una opción del menú o escribe el número/ palabra correspondiente.\n' +
+            'Si quieres este menú en inglés, escribe *US*.',
 
         infoClinica: () =>
             '🏥 *Dentisteam — Tu clínica dental en Tijuana*\n\n' +
@@ -127,7 +127,19 @@ const messages = {
             '• *1* o *cita* → Agendar cita\n' +
             '• *cancelar* → Reiniciar\n\n' +
             'También puedes consultar las *preguntas frecuentes* escribiendo *faq*; si prefieres, ¿te paso con un asesor?\n\n' +
-            '🌐 You can also write in English: *menu*, *appointment*, *cancel*',
+            '🌐 Para cambiar de idioma escribe *US* para inglés o *MX* para español.',
+
+        manual: () =>
+            '🧑‍💼 Perfecto, te paso con recepción. El bot queda en pausa para que puedan continuar la atención sin respuestas automáticas.\n' +
+            'Cuando quieras retomar, escribe *menu* o *cita*.',
+
+        suspicious: () =>
+            '❗ Este chat parece no ser un paciente serio. Voy a pausar las respuestas automáticas para que recepción lo revise.\n' +
+            'Escribe *menu* o *cita* cuando quieras retomar.',
+
+        spam: () =>
+            '⚠️ Detectamos actividad sospechosa. El bot se pausa por seguridad.\n' +
+            'Escribe *menu* o *cita* para continuar.',
 
         cancelar: () =>
             '✅ Proceso cancelado.\n\n' +
@@ -139,6 +151,21 @@ const messages = {
         error: () =>
             '⚠️ Ocurrió un error. Intenta de nuevo en un momento.',
 
+        cerrado: () =>
+            '🕒 Estamos cerrados.\n\n' +
+            'Nuestros horarios son:\n' +
+            '📅 Lun–Vie: 9:00 – 18:00\n' +
+            '📅 Sábado: 9:00 – 14:00\n\n' +
+            'Para agendar cita, llámanos cuando abra:\n' +
+            '📞 +52 663 196 9295',
+
+        citaCerrada: () =>
+            '⏰ Estamos fuera de horario.\n\n' +
+            'Las citas se agendan durante nuestro horario laboral.\n\n' +
+            'Llámanos cuando abra:\n' +
+            '📞 +52 663 196 9295\n\n' +
+            'Horarios: Lun–Vie 9:00–18:00 | Sáb 9:00–14:00',
+
         saludo: () =>
             '👋 ¡Hola! Soy Abril, tu asistente. ¿Cómo te ayudo hoy?\n\n' +
             'Escribe *menu* para ver opciones o *US* para inglés.'
@@ -147,10 +174,10 @@ const messages = {
     en: {
         menu: () =>
             '📋 *Welcome to Dentisteam*\n\n' +
-            'Choose an option by typing the number or text:\n\n' +
+            'Choose an option by tapping a menu item or typing the number/text:\n\n' +
             MENU_OPTIONS.en.join('\n') +
             '\n\n💬 You can also type *"appointment"* to book or *"menu"* anytime.\n' +
-            'If you prefer Spanish, write *ES* or *MX*.',
+            'If you want the menu in Spanish, type *ES*.',
 
         infoClinica: () =>
             '🏥 *Dentisteam — Your dental clinic in Tijuana*\n\n' +
@@ -252,7 +279,19 @@ const messages = {
             '• *1* or *appointment* → Book appointment\n' +
             '• *cancel* → Restart\n\n' +
             'You can also check *FAQs* by typing *faq*; if you prefer, shall I transfer you to an advisor?\n\n' +
-            '🌐 También puedes escribir en español: *menu*, *cita*, *cancelar*',
+            '🌐 To change language type *ES* for Spanish or *US* for English.',
+
+        manual: () =>
+            '👨‍💼 Perfect, I\'m transferring you to our reception team. The bot will pause so they can assist you without automatic responses.\n' +
+            'When you\'re ready to resume, type *menu* or *appointment*.',
+
+        suspicious: () =>
+            '❗ This chat doesn\'t seem to be a serious patient. I\'m pausing automatic responses so our team can review.\n' +
+            'Type *menu* or *appointment* when you\'re ready to continue.',
+
+        spam: () =>
+            '⚠️ We detected suspicious activity. The bot is pausing for security.\n' +
+            'Type *menu* or *appointment* to continue.',
 
         cancelar: () =>
             '✅ Process cancelled.\n\n' +
@@ -261,8 +300,20 @@ const messages = {
         soloTexto: () =>
             '📎 I can only process *text* for now. Please type it out. 😊',
 
-        error: () =>
-            '⚠️ Something went wrong. Please try again in a moment.',
+        cerrado: () =>
+            '🕒 We are currently closed.\n\n' +
+            'Our hours are:\n' +
+            '📅 Mon–Fri: 9:00 AM – 6:00 PM\n' +
+            '📅 Saturday: 9:00 AM – 2:00 PM\n\n' +
+            'To book an appointment, call us when we open:\n' +
+            '📞 +52 663 196 9295',
+
+        citaCerrada: () =>
+            '⏰ We\'re currently closed.\n\n' +
+            'Appointments are booked during our business hours.\n\n' +
+            'Call us when we open:\n' +
+            '📞 +52 663 196 9295\n\n' +
+            'Hours: Mon–Fri 9:00 AM–6:00 PM | Sat 9:00 AM–2:00 PM',
 
         saludo: () =>
             '👋 Hi! I\'m Abril, your Dentisteam assistant. How can I help you today?\n\n' +
