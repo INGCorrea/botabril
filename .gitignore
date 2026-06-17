@@ -6,11 +6,7 @@ node_modules/
 .wwebjs_cache/
 citas.json
 qr.png
-*.log
-.DS_Store
-.wwebjs_auth/
-.wwebjs_cache/
 codigo-qr.png
-.env
-.DS_Store
 *.log
+.DS_Store
+phrasal-aegis-494900-f5-12246efa33a9.json

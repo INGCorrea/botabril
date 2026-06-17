@@ -1,0 +1,180 @@
+Preguntas y respuestas - Bot Abril (ES/EN)
+
+Menú (ES):
+1. Agendar cita
+2. Información de la clínica
+3. Horarios y ubicación
+4. Contacto
+
+Menu (EN):
+1. Book appointment
+2. Clinic information
+3. Hours & location
+4. Contact
+
+Comandos rápidos:
+- menu / menu -> Mostrar opciones
+- 1 o cita / 1 or appointment -> Iniciar flujo de cita
+- cancelar / cancel -> Cancelar flujo
+
+---
+Preguntas / Mensajes (ES):
+
+citaInicio:
+🦷 ¡Perfecto! Vamos a agendar tu cita.
+
+Por favor, escribe tu nombre completo:
+
+citaNombreInvalido:
+❌ Ingresa un nombre completo válido (mínimo 3 letras, solo letras).
+
+citaTelefono:
+✅ Gracias. ¿A qué número de teléfono podemos contactarte?
+(Incluye lada si es de USA o México)
+
+citaTelefonoInvalido:
+❌ Ingresa un número de teléfono válido (mínimo 7 dígitos).
+
+citaSeguro:
+🛡️ ¿Cuentas con seguro dental?
+Ejemplos: Delta Dental PPO, MetLife, Seguro IMSS, etc.
+Si no tienes, escribe ninguno.
+
+citaSeguroInvalido:
+❌ Indica tu seguro dental o escribe ninguno si no tienes.
+
+citaSintomas:
+🦷 Cuéntanos brevemente: ¿cuál es el motivo de tu consulta?
+(dolor, limpieza, implante, urgencia, etc.)
+
+citaSintomasInvalido:
+❌ Describe el motivo con más detalle (entre 5 y 500 caracteres).
+
+citaFecha:
+📅 ¿Qué día y hora te gustaría tu cita?
+Ej: próximo lunes a las 10:00 o 15/06/2026
+
+citaFechaInvalida:
+❌ Ingresa una fecha u horario válido (ej: próximo lunes 10:00, 15/06/2026).
+
+citaResumen (formato):
+✅ ¡Cita solicitada con éxito!
+
+Nombre: {nombre}
+Teléfono: {telefono}
+Seguro: {seguro}
+Motivo: {sintomas}
+Fecha/Hora: {fecha}
+
+Nuestro equipo de recepción te contactará pronto para confirmar tu espacio.
+
+noEntiendo:
+🤔 No entendí ese mensaje.
+
+Prueba con:
+• menu → Ver opciones
+• 1 o cita → Agendar cita
+• cancelar → Reiniciar
+
+Also: You can write in English: menu, appointment, cancel
+
+cancelar:
+✅ Proceso cancelado.
+
+Escribe menu para ver opciones o cita para agendar de nuevo.
+
+soloTexto:
+📎 Por ahora solo puedo procesar texto. Por favor, escríbelo.
+
+error:
+⚠️ Ocurrió un error. Intenta de nuevo en un momento.
+
+saludo:
+👋 ¡Hola! Soy el asistente virtual de Dentisteam.
+
+¿En qué puedo ayudarte hoy?
+
+idiomaCambiado (ES):
+✅ Idioma establecido a Español. Escribe menu para ver opciones.
+
+---
+Questions / Messages (EN):
+
+citaInicio:
+🦷 Great! Let's book your appointment.
+
+Please type your full name:
+
+citaNombreInvalido:
+❌ Please enter a valid full name (at least 3 letters).
+
+citaTelefono:
+✅ Thanks. What phone number can we reach you at?
+(Include country code for US or Mexico)
+
+citaTelefonoInvalido:
+❌ Please enter a valid phone number (at least 7 digits).
+
+citaSeguro:
+🛡️ Do you have dental insurance?
+Examples: Delta Dental PPO, MetLife, Mexican insurance, etc.
+If none, type none.
+
+citaSeguroInvalido:
+❌ Please enter your insurance provider or type none.
+
+citaSintomas:
+🦷 Briefly tell us: what is the reason for your visit?
+(pain, cleaning, implant, emergency, etc.)
+
+citaSintomasInvalido:
+❌ Please describe the reason in more detail (5–500 characters).
+
+citaFecha:
+📅 What day and time would you prefer?
+E.g. next Monday at 10:00 AM or 06/15/2026
+
+citaFechaInvalida:
+❌ Please enter a valid date or time (e.g. next Monday 10 AM, 06/15/2026).
+
+citaResumen (format):
+✅ Appointment request received!
+
+Name: {nombre}
+Phone: {telefono}
+Insurance: {seguro}
+Reason: {sintomas}
+Date/Time: {fecha}
+
+Our front desk will contact you soon to confirm your slot.
+
+noEntiendo:
+🤔 I didn't understand that message.
+
+Try:
+• menu → See options
+• 1 or appointment → Book appointment
+• cancel → Restart
+
+Also: You can write in Spanish: menu, cita, cancelar
+
+cancelar:
+✅ Process cancelled.
+
+Type menu for options or appointment to book again.
+
+soloTexto:
+📎 I can only process text for now. Please type it out.
+
+error:
+⚠️ Something went wrong. Please try again in a moment.
+
+saludo:
+👋 Hi! I'm the Dentisteam virtual assistant.
+
+How can I help you today?
+
+idiomaCambiado (EN):
+✅ Language set to English. Type menu to see options.
+
+*** End of file ***
