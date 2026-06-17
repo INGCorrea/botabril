@@ -7,13 +7,15 @@ const MENU_OPTIONS = {
         '1. Agendar cita',
         '2. Información de la clínica',
         '3. Horarios y ubicación',
-        '4. Contacto'
+        '4. Contacto',
+        '5. Preguntas frecuentes'
     ],
     en: [
         '1. Book appointment',
         '2. Clinic information',
         '3. Hours & location',
-        '4. Contact'
+        '4. Contact',
+        '5. FAQs'
     ]
 };
 
@@ -21,32 +23,34 @@ const messages = {
     es: {
         menu: () =>
             '📋 *Bienvenido a Dentisteam*\n\n' +
-            'Elige una opción escribiendo el número o el texto:\n\n' +
             MENU_OPTIONS.es.join('\n') +
-            '\n\n💬 También puedes escribir *"cita"* para agendar o *"menu"* en cualquier momento.\n' +
-            '🌐 Puedes escribir en español o inglés.',
+            '\n\n💬 Escribe el número o la palabra correspondiente.\n' +
+            'Si prefieres inglés escribe *US*.',
 
         infoClinica: () =>
             '🏥 *Dentisteam — Tu clínica dental en Tijuana*\n\n' +
+            'Tu sonrisa se merece lo mejor. Te guiamos paso a paso para brindarte atención cercana y profesional.\n\n' +
             '• Odontología general, estética y emergencias\n' +
             '• Implantes, All-on-4, diseño de sonrisa, ortodoncia e Invisalign\n' +
             '• Atención personalizada — te cuidamos como familia\n' +
             '• Aceptamos seguros *PPO de USA* 🇺🇸\n\n' +
-            '📍 *Dirección:*\n' +
-            'Av. Río Tijuana 606, Revolución, 22015 Tijuana, B.C.\n' +
+            '📍 *Dirección:* Av. Río Tijuana 606, Revolución, 22015 Tijuana, B.C.\n' +
             'https://maps.app.goo.gl/SMjA3rF9ptzk6LneA\n\n' +
-            '🕒 *Horarios:*\n' +
-            'Lun–Vie 9:00 – 18:00 | Sáb 9:00 – 14:00\n\n' +
+            '🕒 *Horarios:* Lun–Vie 9:00 – 18:00 | Sáb 9:00 – 14:00\n\n' +
             '📞 *Teléfono / WhatsApp:* +52 663 196 9295\n' +
-            '🌐 *Web:* https://dentisteam.com/\n' +
-            '📸 *Instagram:* https://www.instagram.com/dentisteam/\n\n' +
+            '🌐 *Web:* https://dentisteam.com/ | 📸 Instagram: https://www.instagram.com/dentisteam/\n\n' +
+            'Para nosotros es importante valorarte para darte un plan y presupuestos correctos.\n' +
+            'Si quieres, podemos agendar una valoración donde te explicaremos planes, tratamientos y costos paso a paso.\n\n' +
             '¿Qué deseas hacer?\n' +
             '• *1* o *cita* → Agendar\n' +
-            '• Cualquier letra → Ver menú',
+            '• *5* o *faq* → Preguntas frecuentes',
 
         citaInicio: () =>
             '🦷 *¡Perfecto! Vamos a agendar tu cita.*\n\n' +
             'Por favor, escribe tu *nombre completo*:',
+
+        askNeed: () =>
+            '¿Qué necesitas?\nEj: dolor / estética / limpieza / urgencia',
 
         citaNombreInvalido: () =>
             '❌ Ingresa un *nombre completo* válido (mínimo 3 letras, solo letras).',
@@ -66,9 +70,34 @@ const messages = {
         citaSeguroInvalido: () =>
             '❌ Indica tu seguro dental o escribe *ninguno* si no tienes.',
 
+        precioNo: () =>
+            'ℹ️ No damos precios por WhatsApp. Siempre se necesita una valoración para dar un presupuesto correcto. ¿Deseas agendar una valoración (escribe *cita*)?',
+
+        faq: () =>
+            '❓ *Preguntas frecuentes*\n\n' +
+            '• ¿Aceptan aseguranza de USA? → Sí, PPO. Pedimos datos para revisar cobertura.\n' +
+            '• ¿Atienden pacientes de USA? → Sí.\n' +
+            '• ¿Dónde están? → En Tijuana, cerca de la frontera.\n' +
+            '• ¿Atienden niños? → Sí, con especialista.\n' +
+            '• ¿Hacen Invisalign? → Sí.\n' +
+            '• ¿Hacen implantes? → Sí.\n' +
+            '• ¿Dan precios por Whats? → No, hasta valoración.\n' +
+            '• ¿Aceptan tarjeta? → Sí.\n' +
+            '• ¿Meses sin intereses? → Sí.\n' +
+            '• ¿Cómo agendo? → Por WhatsApp, escribe *cita*.',
+
         citaSintomas: () =>
             '🦷 Cuéntanos brevemente: *¿cuál es el motivo de tu consulta?*\n' +
             '_(dolor, limpieza, implante, urgencia, etc.)_',
+
+        prioridad: () =>
+            '⚠️ Entendido: si es dolor le daremos prioridad inmediata. Por favor proporciona tu número de teléfono.',
+
+        askDob: () =>
+            '📅 Por favor indica la *fecha de nacimiento* del paciente (DD/MM/AAAA).',
+
+        askMemberId: () =>
+            '🔢 Por favor indica el *Member ID* o número de afiliado del seguro.',
 
         citaSintomasInvalido: () =>
             '❌ Describe el motivo con más detalle (entre 5 y 500 caracteres).',
@@ -88,7 +117,8 @@ const messages = {
             `🦷 *Motivo:* ${datos.sintomas}\n` +
             `📅 *Fecha/Hora:* ${datos.fecha}\n\n` +
             'Nuestro equipo de recepción te contactará pronto para *confirmar tu espacio*. 🙏\n\n' +
-            'Escribe *menu* si necesitas algo más.',
+            'Escribe *menu* si necesitas algo más.\n' +
+            'Muchas gracias por tu respuesta, te contestaremos dentro de nuestro horario de atención: Lun–Vie 9:00 – 18:00 | Sáb 9:00 – 14:00',
 
         noEntiendo: () =>
             '🤔 No entendí ese mensaje.\n\n' +
@@ -96,6 +126,7 @@ const messages = {
             '• *menu* → Ver opciones\n' +
             '• *1* o *cita* → Agendar cita\n' +
             '• *cancelar* → Reiniciar\n\n' +
+            'También puedes consultar las *preguntas frecuentes* escribiendo *faq*; si prefieres, ¿te paso con un asesor?\n\n' +
             '🌐 You can also write in English: *menu*, *appointment*, *cancel*',
 
         cancelar: () =>
@@ -109,8 +140,8 @@ const messages = {
             '⚠️ Ocurrió un error. Intenta de nuevo en un momento.',
 
         saludo: () =>
-            '👋 ¡Hola! Soy el asistente virtual de *Dentisteam*.\n\n' +
-            '¿En qué puedo ayudarte hoy?'
+            '👋 ¡Hola! Soy Abril, tu asistente. ¿Cómo te ayudo hoy?\n\n' +
+            'Escribe *menu* para ver opciones o *US* para inglés.'
     },
 
     en: {
@@ -119,7 +150,7 @@ const messages = {
             'Choose an option by typing the number or text:\n\n' +
             MENU_OPTIONS.en.join('\n') +
             '\n\n💬 You can also type *"appointment"* to book or *"menu"* anytime.\n' +
-            '🌐 You can write in English or Spanish.',
+            'If you prefer Spanish, write *ES* or *MX*.',
 
         infoClinica: () =>
             '🏥 *Dentisteam — Your dental clinic in Tijuana*\n\n' +
@@ -143,6 +174,9 @@ const messages = {
             '🦷 *Great! Let\'s book your appointment.*\n\n' +
             'Please type your *full name*:',
 
+        askNeed: () =>
+            'What do you need?\nE.g. pain / esthetic / cleaning / emergency',
+
         citaNombreInvalido: () =>
             '❌ Please enter a valid *full name* (at least 3 letters).',
 
@@ -165,6 +199,31 @@ const messages = {
             '🦷 Briefly tell us: *what is the reason for your visit?*\n' +
             '_(pain, cleaning, implant, emergency, etc.)_',
 
+        prioridad: () =>
+            '⚠️ Understood: if this is pain we will prioritize you. Please provide your phone number.',
+
+        askDob: () =>
+            '📅 Please provide the patient\'s date of birth (MM/DD/YYYY).',
+
+        askMemberId: () =>
+            '🔢 Please provide the insurance Member ID or affiliate number.',
+
+        precioNo: () =>
+            '🧡 For us, providing personalized care is very important; that is why we always share information about plans, treatments and pricing during your valuation appointment. This way we guide you step by step while caring for your smile. Would you like to schedule a valuation? (type *appointment*)',
+
+        faq: () =>
+            '❓ *Frequently Asked Questions*\n\n' +
+            '• Do you accept US insurance? → Yes, we accept PPO plans. Many patients already have coverage and don\'t know it; we request details to check your case.\n' +
+            '• Do you treat US patients? → Yes, we can coordinate if needed.\n' +
+            '• Where are you located? → In Tijuana, near the border.\n' +
+            '• Do you treat children? → Yes, with a pediatric specialist.\n' +
+            '• Do you offer Invisalign? → Yes.\n' +
+            '• Do you do implants? → Yes.\n' +
+            '• Do you give prices on WhatsApp? → No; to give an accurate plan and estimate we perform a valuation.\n' +
+            '• Do you accept cards? → Yes.\n' +
+            '• Installments? → Yes, ask about promotions.\n' +
+            '• How to book? → Via WhatsApp, type *appointment*.',
+
         citaSintomasInvalido: () =>
             '❌ Please describe the reason in more detail (5–500 characters).',
 
@@ -183,7 +242,8 @@ const messages = {
             `🦷 *Reason:* ${datos.sintomas}\n` +
             `📅 *Date/Time:* ${datos.fecha}\n\n` +
             'Our front desk will contact you soon to *confirm your slot*. 🙏\n\n' +
-            'Type *menu* if you need anything else.',
+            'Type *menu* if you need anything else.\n' +
+            'Thank you — we will reply within business hours: Mon–Fri 9:00 AM – 6:00 PM | Sat 9:00 AM – 2:00 PM',
 
         noEntiendo: () =>
             '🤔 I didn\'t understand that message.\n\n' +
@@ -191,6 +251,7 @@ const messages = {
             '• *menu* → See options\n' +
             '• *1* or *appointment* → Book appointment\n' +
             '• *cancel* → Restart\n\n' +
+            'You can also check *FAQs* by typing *faq*; if you prefer, shall I transfer you to an advisor?\n\n' +
             '🌐 También puedes escribir en español: *menu*, *cita*, *cancelar*',
 
         cancelar: () =>
@@ -204,8 +265,8 @@ const messages = {
             '⚠️ Something went wrong. Please try again in a moment.',
 
         saludo: () =>
-            '👋 Hi! I\'m the *Dentisteam* virtual assistant.\n\n' +
-            'How can I help you today?'
+            '👋 Hi! I\'m Abril, your Dentisteam assistant. How can I help you today?\n\n' +
+            'Type *menu* to see options or *ES* for Spanish.'
     }
 };
     

@@ -145,6 +145,11 @@ botabril/
 
 ---
 
+## 📈 Diagrama de flujo Q/A
+
+Visualiza el flujo de preguntas y respuestas del bot en: [docs/flujo_QA.md](docs/flujo_QA.md)
+
+
 ## ⚙️ Google Sheets (Pausado)
 
 Actualmente pausado para simplificar el deployment. Para reactivar:

@@ -16,6 +16,12 @@ const INTENTS = {
         '1', 'cita', 'agendar', 'agendar cita', 'appointment', 'book',
         'book appointment', 'schedule', 'schedule appointment', 'reservar'
     ],
+    precio: [
+        'precio', 'cost', 'costo', 'cuanto', 'cuánto', 'valor', 'valoracion', 'cotizacion'
+    ],
+    faq: [
+        '5', 'faq', 'preguntas', 'preguntas frecuentes', 'preguntasfrecuentes', 'frequently', 'faqs'
+    ],
     info: [
         '2', 'información', 'informacion', 'info', 'information', 'clinica',
         'clínica', 'clinic', 'about', 'acerca', 'servicios', 'services',
