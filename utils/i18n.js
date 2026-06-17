@@ -168,7 +168,33 @@ const messages = {
 
         saludo: () =>
             '👋 ¡Hola! Soy Abril, tu asistente. ¿Cómo te ayudo hoy?\n\n' +
-            'Escribe *menu* para ver opciones o *US* para inglés.'
+            'Escribe *menu* para ver opciones o *US* para inglés.',
+
+        citaConfirmar: (datos) =>
+            '📋 Por favor revisa los datos de tu cita:\n\n' +
+            `👤 Nombre: ${datos.nombre}\n` +
+            `📞 Teléfono: ${datos.telefono}\n` +
+            `🛡️ Seguro: ${datos.seguro}\n` +
+            `🦷 Motivo: ${datos.sintomas}\n` +
+            `📅 Fecha/Hora: ${datos.fecha}\n\n` +
+            '¿Qué deseas hacer?\n' +
+            '1. Confirmar cita\n' +
+            '2. Ingresar otra fecha y hora\n' +
+            '3. Hablar con recepción',
+
+        citaConfirmada: (datos) =>
+            '✅ ¡Cita confirmada! Nuestro equipo de recepción te contactará pronto para confirmar tu espacio.\n\n' +
+            'Muchas gracias por tu preferencia.',
+
+        citaFueraHorario: () =>
+            '⏰ Lo siento, el horario que solicitaste está fuera de nuestro horario de atención.\n\n' +
+            'Nuestros horarios son:\n' +
+            '📅 Lun–Vie: 9:00 – 18:00\n' +
+            '📅 Sábado: 9:00 – 14:00\n' +
+            '❌ Domingo: Cerrado\n\n' +
+            '¿Qué deseas hacer?\n' +
+            '1. Ingresar otra fecha y hora\n' +
+            '2. Hablar con recepción'
     },
 
     en: {
@@ -320,7 +346,33 @@ const messages = {
 
         saludo: () =>
             '👋 Hi! I\'m Abril, your Dentisteam assistant. How can I help you today?\n\n' +
-            'Type *menu* to see options or *ES* for Spanish.'
+            'Type *menu* to see options or *ES* for Spanish.',
+
+        citaConfirmar: (datos) =>
+            '📋 Please review your appointment details:\n\n' +
+            `👤 Name: ${datos.nombre}\n` +
+            `📞 Phone: ${datos.telefono}\n` +
+            `🛡️ Insurance: ${datos.seguro}\n` +
+            `🦷 Reason: ${datos.sintomas}\n` +
+            `📅 Date/Time: ${datos.fecha}\n\n` +
+            'What would you like to do?\n' +
+            '1. Confirm appointment\n' +
+            '2. Enter another date and time\n' +
+            '3. Talk to reception',
+
+        citaConfirmada: (datos) =>
+            '✅ Appointment confirmed! Our reception team will contact you soon to confirm your spot.\n\n' +
+            'Thank you for your preference.',
+
+        citaFueraHorario: () =>
+            '⏰ Sorry, the time you requested is outside our business hours.\n\n' +
+            'Our hours are:\n' +
+            '📅 Mon–Fri: 9:00 AM – 6:00 PM\n' +
+            '📅 Saturday: 9:00 AM – 2:00 PM\n' +
+            '❌ Sunday: Closed\n\n' +
+            'What would you like to do?\n' +
+            '1. Enter another date and time\n' +
+            '2. Talk to reception'
     }
 };
     

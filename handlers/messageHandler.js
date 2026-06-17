@@ -29,7 +29,8 @@ const FLUJO_PASOS = {
     FECHA_NAC: 'fecha_nac',
     MEMBER_ID: 'member_id',
     SINTOMAS: 'sintomas',
-    FECHA: 'fecha'
+    FECHA: 'fecha',
+    ESPERANDO_CONFIRMACION_CITA: 'esperando_confirmacion_cita' // Estado para confirmar cita
 };
 
 const isMediaMessage = (msg) => msg.hasMedia || msg.type !== 'chat';
@@ -237,20 +238,49 @@ const procesarFecha = async (msg, user, chatID) => {
         await reply(msg, lang, 'citaFechaInvalida');
         return;
     }
+    
     user.datos.fecha = msg.body.trim();
-
     user.datos.timestamp = new Date().toISOString();
+    user.paso = FLUJO_PASOS.ESPERANDO_CONFIRMACION_CITA;
+    await reply(msg, lang, 'citaConfirmar', user.datos);
+};
 
-    await reply(msg, lang, 'citaResumen', user.datos);
-
-    try {
-        saveCita({ ...user.datos, idioma: lang });
-        console.log('✨ NUEVA CITA REGISTRADA:', user.datos);
-    } catch (error) {
-        console.error('⚠️  Cita registrada pero con error al guardar:', error);
+// Nueva función para manejar la confirmación de cita
+const procesarConfirmacionCita = async (msg, user, chatID) => {
+    const { lang } = user;
+    const texto = msg.body.toLowerCase().trim();
+    
+    // Opción 1: Confirmar cita
+    if (texto.includes('1') || texto.includes('confirmar') || texto.includes('confirm')) {
+        await reply(msg, lang, 'citaConfirmada', user.datos);
+        try {
+            saveCita({ ...user.datos, idioma: lang });
+            console.log('✨ NUEVA CITA REGISTRADA:', user.datos);
+        } catch (error) {
+            console.error('⚠️  Cita registrada pero con error al guardar:', error);
+        }
+        delete usuarios[chatID];
+        return;
     }
-
-    delete usuarios[chatID];
+    
+    // Opción 2: Ingresar otra fecha y hora
+    if (texto.includes('2') || texto.includes('otra fecha') || texto.includes('otra hora') || 
+        texto.includes('another date') || texto.includes('another time')) {
+        user.paso = FLUJO_PASOS.FECHA;
+        await reply(msg, lang, 'citaFecha');
+        return;
+    }
+    
+    // Opción 3: Hablar con recepción (pausar el bot)
+    if (texto.includes('3') || texto.includes('hablar con recepcion') || texto.includes('hablar con recepción') ||
+        texto.includes('talk to reception')) {
+        user.paused = true;
+        await reply(msg, lang, 'manual');
+        return;
+    }
+    
+    // Si no es ninguna opción, volver a preguntar
+    await reply(msg, lang, 'citaConfirmar', user.datos);
 };
 
 const handleIdleMessage = async (msg, chatID, texto) => {
@@ -445,6 +475,9 @@ const handleMessage = async (msg) => {
                 break;
             case FLUJO_PASOS.FECHA:
                 await procesarFecha(msg, user, chatID);
+                break;
+            case FLUJO_PASOS.ESPERANDO_CONFIRMACION_CITA:
+                await procesarConfirmacionCita(msg, user, chatID);
                 break;
         }
     } catch (error) {
