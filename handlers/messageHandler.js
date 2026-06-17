@@ -169,7 +169,7 @@ const handleIdleMessage = async (msg, chatID, texto) => {
     const intent = getIntent(texto);
 
     if (intent === 'cancelar') {
-        await reply(msg, lang, 'noEntiendo');
+        await cancelarFlujo(msg, chatID);
         return;
     }
 

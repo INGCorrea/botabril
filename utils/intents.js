@@ -10,7 +10,7 @@ const INTENTS = {
     ],
     saludo: [
         'hola', 'hello', 'hi', 'hey', 'buenas', 'buenos dias', 'buenos días',
-        'good morning', 'good afternoon', 'good evening'
+        'good morning', 'good afternoon', 'good evening', 'ok', 'okay', 'vale', 'listo'
     ],
     cita: [
         '1', 'cita', 'agendar', 'agendar cita', 'appointment', 'book',
