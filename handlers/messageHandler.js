@@ -337,8 +337,22 @@ const handleIdleMessage = async (msg, chatID, texto) => {
 
 const handleMessage = async (msg) => {
     try {
+        // 1. Ignorar mensajes de mí mismo
         if (msg.fromMe) return;
+        
+        // 2. Ignorar grupos y broadcasts
         if (isGroupOrBroadcast(msg)) return;
+        
+        // 3. IGNORAR MENSJES ANTIGUOS (más de 1 minuto)
+        const msgTimestamp = msg.timestamp * 1000; // Convertir a ms
+        const nowTimestamp = Date.now();
+        const timeDiff = nowTimestamp - msgTimestamp;
+        const ONE_MINUTE = 60 * 1000;
+        
+        if (timeDiff > ONE_MINUTE) {
+            console.log(`⏭️ Ignorando mensaje antiguo (${Math.floor(timeDiff / 1000)} segundos atrás)`);
+            return;
+        }
 
         const chatID = msg.from;
         const texto = msg.body ? msg.body.toLowerCase().trim() : '';
