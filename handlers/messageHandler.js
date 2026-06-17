@@ -108,7 +108,6 @@ const iniciarFlujo = async (msg, chatID, lang) => {
 const enviarMenu = async (msg, lang) => {
     await sendMenuList(msg, lang);
 };
-
 const enviarInfoClinica = async (msg, lang) => {
     await reply(msg, lang, 'infoClinica');
 };

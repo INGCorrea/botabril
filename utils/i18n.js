@@ -300,6 +300,9 @@ const messages = {
         soloTexto: () =>
             '📎 I can only process *text* for now. Please type it out. 😊',
 
+        error: () =>
+            '⚠️ Something went wrong. Please try again in a moment.',
+
         cerrado: () =>
             '🕒 We are currently closed.\n\n' +
             'Our hours are:\n' +

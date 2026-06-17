@@ -94,7 +94,6 @@ const validateDate = (dateStr) => {
     
     // Palabra clave + hora
     if (validKeywords.some(kw => trimmed.includes(kw))) {
-        const timeRegex = /\b([0-2]?[0-9]|2[0-3]):[0-5][0-9]\b|\b(am|pm)\b/i;
         return true; // Acepta si tiene palabra clave válida, con o sin hora
     }
     
