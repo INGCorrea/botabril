@@ -369,10 +369,6 @@ const handleMessage = async (msg) => {
         console.log('   - Usuario existe:', !!usuarios[chatID]);
         console.log('   - Usuario está pausado:', usuarios[chatID]?.paused);
 
-        if (!usuarios[chatID] && intent) {
-            usuarios[chatID] = { paso: null, datos: {}, lang };
-        }
-
         // Detectar spam activity (rapid-fire messages)
         if (usuarios[chatID] && detectSpamActivity(usuarios[chatID])) {
             usuarios[chatID].paused = true;
@@ -406,8 +402,10 @@ const handleMessage = async (msg) => {
             }
         }
 
-        if (isMediaMessage(msg) && usuarios[chatID]) {
-            await reply(msg, lang, 'soloTexto');
+        if (isMediaMessage(msg)) {
+            if (usuarios[chatID]) {
+                await reply(msg, lang, 'soloTexto');
+            }
             return;
         }
 
@@ -423,14 +421,18 @@ const handleMessage = async (msg) => {
             return;
         }
 
-        if (!usuarios[chatID]) {
+        // Si el usuario no está en un flujo, manejar como mensaje idle
+        const user = usuarios[chatID];
+        if (!user || user.paso === null) {
             await handleIdleMessage(msg, chatID, texto);
+            // Solo crear el usuario si hay un intent válido para iniciar un flujo después
+            if (intent && !usuarios[chatID]) {
+                usuarios[chatID] = { paso: null, datos: {}, lang };
+            }
             return;
         }
 
-        const user = usuarios[chatID];
-        if (!user) return;
-
+        // El usuario está en un flujo, procesar paso
         switch (user.paso) {
             case FLUJO_PASOS.NOMBRE:
                 await procesarNombre(msg, user);
