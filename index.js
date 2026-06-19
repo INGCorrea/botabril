@@ -5,7 +5,7 @@
 
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const config = require('./config');
-const { handleMessage, getActiveUsers } = require('./handlers/messageHandler');
+const { handleMessage, getActiveUsers, setBotStartTime } = require('./handlers/messageHandler');
 const { generateQRImage, deleteQRImage } = require('./utils/qrGenerator');
 
 // Inicializar cliente
@@ -25,6 +25,7 @@ client.on('qr', (qr) => {
 client.on('ready', () => {
     console.log('\n✅ BOT DE DENTISTEAM CONECTADO');
     console.log('🔄 Esperando pacientes...\n');
+    setBotStartTime(Date.now()); // Registrar hora de inicio para ignorar mensajes anteriores
 });
 
 // Evento: Mensaje recibido

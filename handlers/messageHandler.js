@@ -20,6 +20,7 @@ const { getIntent, isSingleLetter } = require('../utils/intents');
 const { isWithinBusinessHours, getNextOpeningTime } = require('../utils/businessHours');
 
 const usuarios = {};
+let botStartTime = null; // Hora de inicio del bot para ignorar mensajes anteriores
 
 const FLUJO_PASOS = {
     NOMBRE: 'nombre',
@@ -336,16 +337,34 @@ const handleIdleMessage = async (msg, chatID, texto) => {
     await reply(msg, lang, 'noEntiendo');
 };
 
+// Establecer la hora de inicio del bot
+const setBotStartTime = (time) => {
+    botStartTime = time;
+    console.log(`🕐 Hora de inicio del bot registrada: ${new Date(botStartTime).toLocaleString()}`);
+};
+
 const handleMessage = async (msg) => {
     try {
         // 1. Ignorar mensajes de mí mismo
-        if (msg.fromMe) return;
+        if (msg.fromMe) {
+            console.log('⏭️ Ignorando mensaje propio');
+            return;
+        }
         
         // 2. Ignorar grupos y broadcasts
-        if (isGroupOrBroadcast(msg)) return;
+        if (isGroupOrBroadcast(msg)) {
+            console.log('⏭️ Ignorando mensaje de grupo/broadcast');
+            return;
+        }
         
-        // 3. IGNORAR MENSJES ANTIGUOS (más de 1 minuto)
+        // 3. IGNORAR MENSJES ANTERIORES AL INICIO DEL BOT
         const msgTimestamp = msg.timestamp * 1000; // Convertir a ms
+        if (botStartTime && msgTimestamp < botStartTime) {
+            console.log(`⏭️ Ignorando mensaje anterior al inicio del bot (${new Date(msgTimestamp).toLocaleString()})`);
+            return;
+        }
+        
+        // 4. IGNORAR MENSJES ANTIGUOS (más de 1 minuto, doble seguridad)
         const nowTimestamp = Date.now();
         const timeDiff = nowTimestamp - msgTimestamp;
         const ONE_MINUTE = 60 * 1000;
@@ -368,6 +387,18 @@ const handleMessage = async (msg) => {
         console.log('   - Está en horario de atención:', isOpen);
         console.log('   - Usuario existe:', !!usuarios[chatID]);
         console.log('   - Usuario está pausado:', usuarios[chatID]?.paused);
+
+        // 4. PRIMERO REVISAR SI EL USUARIO ESTÁ EN PAUSA
+        if (usuarios[chatID]?.paused) {
+            console.log('⏸️ Usuario está pausado');
+            if (intent === 'menu' || intent === 'cita' || intent === 'cancelar') {
+                console.log('▶️ Reanudando bot para usuario');
+                usuarios[chatID].paused = false;
+            } else {
+                console.log('⏭️ Ignorando mensaje porque usuario está pausado');
+                return;
+            }
+        }
 
         // Detectar spam activity (rapid-fire messages)
         if (usuarios[chatID] && detectSpamActivity(usuarios[chatID])) {
@@ -392,14 +423,6 @@ const handleMessage = async (msg) => {
             await reply(msg, selected, 'idiomaCambiado');
             await enviarMenu(msg, selected);
             return;
-        }
-
-        if (usuarios[chatID]?.paused) {
-            if (intent === 'menu' || intent === 'cita' || intent === 'cancelar') {
-                usuarios[chatID].paused = false;
-            } else {
-                return;
-            }
         }
 
         if (isMediaMessage(msg)) {
@@ -464,12 +487,15 @@ const handleMessage = async (msg) => {
         }
     } catch (error) {
         console.error('❌ Error procesando mensaje:', error);
-        const lang = detectLanguage(msg.body || '');
-        await reply(msg, lang, 'error');
+        if (msg && msg.body) {
+            const lang = detectLanguage(msg.body || '');
+            await reply(msg, lang, 'error');
+        }
     }
 };
 
 module.exports = {
     handleMessage,
-    getActiveUsers: () => Object.keys(usuarios).length
+    getActiveUsers: () => Object.keys(usuarios).length,
+    setBotStartTime
 };
