@@ -14,11 +14,11 @@ const BUSINESS_HOURS = {
 };
 
 const getTijuanaTime = () => {
-  const now = new Date();
-  // Tijuana está en UTC-8 (PST) o UTC-7 (PDT)
-  // Usamos directamente la conversión manual
-  const tijuanaDate = new Date(now.toLocaleString('en-US', { timeZone: 'America/Mexico_City' }));
-  return tijuanaDate;
+    const now = new Date();
+    // Tijuana está en America/Tijuana (UTC-8 PST / UTC-7 PDT)
+    const tijuanaDate = new Date(now.toLocaleString('en-US', { timeZone: 'America/Tijuana' }));
+    console.log('🕐 Hora actual en Tijuana:', tijuanaDate.toLocaleString());
+    return tijuanaDate;
 };
 
 const isWithinBusinessHours = () => {

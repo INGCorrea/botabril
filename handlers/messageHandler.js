@@ -288,77 +288,48 @@ const handleIdleMessage = async (msg, chatID, texto) => {
     const intent = getIntent(texto);
     const isOpen = isWithinBusinessHours();
 
+    console.log('🔄 handleIdleMessage:');
+    console.log('   - Intent:', intent);
+    console.log('   - Is open:', isOpen);
+
     if (intent === 'cancelar') {
         await cancelarFlujo(msg, chatID);
         return;
     }
 
     if (intent === 'saludo') {
-        if (!isOpen) {
-            await reply(msg, lang, 'cerrado');
-            return;
-        }
         await reply(msg, lang, 'saludo');
         await enviarMenu(msg, lang);
         return;
     }
 
     if (!intent && (texto === '' || isSingleLetter(texto))) {
-        if (!isOpen) {
-            await reply(msg, lang, 'cerrado');
-            return;
-        }
         await enviarMenu(msg, lang);
         return;
     }
 
     if (intent === 'menu') {
-        if (!isOpen) {
-            await reply(msg, lang, 'cerrado');
-            return;
-        }
         await enviarMenu(msg, lang);
         return;
     }
 
     if (intent === 'precio') {
-        if (!isOpen) {
-            await reply(msg, lang, 'cerrado');
-            return;
-        }
         await reply(msg, lang, 'precioNo');
         return;
     }
 
     if (intent === 'faq') {
-        if (!isOpen) {
-            await reply(msg, lang, 'cerrado');
-            return;
-        }
         await reply(msg, lang, 'faq');
         return;
     }
 
     if (intent === 'cita') {
-        if (!isOpen) {
-            await reply(msg, lang, 'citaCerrada');
-            return;
-        }
         await iniciarFlujo(msg, chatID, lang);
         return;
     }
 
     if (intent === 'info' || intent === 'horarios' || intent === 'contacto') {
-        if (!isOpen) {
-            await reply(msg, lang, 'cerrado');
-            return;
-        }
         await enviarInfoClinica(msg, lang);
-        return;
-    }
-
-    if (!isOpen) {
-        await reply(msg, lang, 'cerrado');
         return;
     }
 
@@ -388,6 +359,15 @@ const handleMessage = async (msg) => {
         const texto = msg.body ? msg.body.toLowerCase().trim() : '';
         const intent = getIntent(texto);
         const lang = getLang(msg, chatID);
+        const isOpen = isWithinBusinessHours();
+        
+        // LOGS DE DEPURACIÓN
+        console.log('🔍 Nuevo mensaje:');
+        console.log('   - Texto:', texto);
+        console.log('   - Intent detectado:', intent);
+        console.log('   - Está en horario de atención:', isOpen);
+        console.log('   - Usuario existe:', !!usuarios[chatID]);
+        console.log('   - Usuario está pausado:', usuarios[chatID]?.paused);
 
         if (!usuarios[chatID] && intent) {
             usuarios[chatID] = { paso: null, datos: {}, lang };
